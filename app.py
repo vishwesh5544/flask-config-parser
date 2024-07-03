@@ -6,7 +6,6 @@ app = Flask(__name__)
 
 # Load configuration
 config_loader = ConfigLoader(config_dir='./config')
-app_config = config_loader.load_config()
 
 # Initialize configuration service
 config_service = ConfigService(config_dir='./config')

@@ -1,43 +1,25 @@
+# config/config_service.py
 from dataclasses import asdict
-from typing import Any, Dict, List
+from typing import List, Dict, Any
 from config_loader import ConfigLoader
-from models.app_config import AppConfig
-
-
-# class ConfigService:
-#     _instance = None
-
-#     def __new__(cls, config_dir: str):
-#         if cls._instance is None:
-#             cls._instance = super(ConfigService, cls).__new__(cls)
-#             cls._instance._initialize(config_dir)
-#         return cls._instance
-
-#     def _initialize(self, config_dir: str):
-#         self.config_loader = ConfigLoader(config_dir)
-#         self.config = self.config_loader.load_config()
-
-#     def get_config(self) -> AppConfig:
-#         return self.config
-
-#     def get_config_as_dict(self) -> Dict[str, Any]:
-#         return asdict(self.config)
+from models.app_config import AppConfig, DatabaseConfig, ServerConfig
 
 class ConfigService:
-    _instance = None
-
-    def __new__(cls, config_dir: str):
-        if cls._instance is None:
-            cls._instance = super(ConfigService, cls).__new__(cls)
-            cls._instance._initialize(config_dir)
-        return cls._instance
-
-    def _initialize(self, config_dir: str):
+    def __init__(self, config_dir: str):
         self.config_loader = ConfigLoader(config_dir)
-        self.configs = self.config_loader.load_configs()
+
+    def _load_and_transform_configs(self) -> List[AppConfig]:
+        raw_configs = self.config_loader.load_configs()
+        app_configs = []
+        for config in raw_configs:
+            database_config = DatabaseConfig(**config.get('Database', {}))
+            server_config = ServerConfig(**config.get('Server', {}))
+            app_config = AppConfig(Database=database_config, Server=server_config)
+            app_configs.append(app_config)
+        return app_configs
 
     def get_configs(self) -> List[AppConfig]:
-        return self.configs
+        return self._load_and_transform_configs()
 
     def get_configs_as_dict(self) -> List[Dict[str, Any]]:
-        return [asdict(config) for config in self.configs]
+        return [asdict(config) for config in self.get_configs()]
