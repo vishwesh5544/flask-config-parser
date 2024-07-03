@@ -1,0 +1,9 @@
+Database:
+  host: localhost
+  port: 3307
+  username: user
+  password: secret
+
+Server:
+  address: 192.168.0.2
+  port: 8081

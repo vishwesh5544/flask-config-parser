@@ -14,7 +14,7 @@ config_service = ConfigService(config_dir='./config')
 # Define a simple route to verify the configuration
 @app.route('/')
 def index():
-    config_dict = config_service.get_config_as_dict()
+    config_dict = config_service.get_configs_as_dict()
     return jsonify(config_dict)
 
 if __name__ == '__main__':
